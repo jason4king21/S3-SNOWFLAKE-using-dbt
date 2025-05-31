@@ -1,0 +1,23 @@
+version: 2
+sources:
+    - name: source
+      database: WALMART
+      schema: BRONZE
+      tables:
+        - name: STORES
+        - name: DEPARTMENT
+    # - name: xfm
+    #   database: WALMART
+    #   schema: SILVER
+    #   tables:
+    #     - name: WALMART_STORE_DIM
+    #     - name: WALMART_DEPARTMENT_DIM
+models:
+  - name: WALMART_STORE_DIM
+  - name: WALMART_DEPARTMENT_DIM
+  - name: walmart_date_dim
+    columns:
+    - name: date_id
+      tests:
+        - unique
+        - not_null
