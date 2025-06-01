@@ -6,6 +6,7 @@ sources:
       tables:
         - name: STORES
         - name: DEPARTMENT
+        - name: FACT
     # - name: xfm
     #   database: WALMART
     #   schema: SILVER
@@ -13,11 +14,13 @@ sources:
     #     - name: WALMART_STORE_DIM
     #     - name: WALMART_DEPARTMENT_DIM
 models:
-  - name: WALMART_STORE_DIM
-  - name: WALMART_DEPARTMENT_DIM
+  - name: walmart_store_dim
+  - name: walmart_department_dim
+  - name: walmart_department_fact
   - name: walmart_date_dim
     columns:
     - name: date_id
       tests:
         - unique
         - not_null
+  - name: stg_fact_table
