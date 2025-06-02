@@ -8,7 +8,7 @@ from diagrams.programming.language import Python
 
 
 
-with Diagram("SCD2 Architecture with Snowflake and DBT", show=False, direction="LR", filename="diagrams/architecture", outformat="png"):
+with Diagram("SCD1/SCD2 Architecture with Snowflake and DBT", show=False, direction="LR", filename="diagrams/architecture", outformat="png"):
     with Cluster("Data Ingestion"):
         s3 = S3("AWS S3 Bucket\n(raw data)")
         privatelink = Privatelink("AWS PrivateLink")
