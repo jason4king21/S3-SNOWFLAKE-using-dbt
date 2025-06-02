@@ -15,9 +15,79 @@ import streamlit as st
 import matplotlib.pyplot as plt
 from snowflake.snowpark import Session
 import calendar
+from matplotlib.backends.backend_pdf import PdfPages
+from io import BytesIO
 ```
 
-## Display Metrics with Charts
+## Define Functions
+
+
+```
+def render_table(dataframe, title, col_width=3.0, row_height=0.625, font_size=14):
+    import matplotlib.pyplot as plt
+    fig, ax = plt.subplots(figsize=(col_width * len(dataframe.columns), row_height * len(dataframe)))
+    ax.axis('off')
+    table = ax.table(cellText=dataframe.values, colLabels=dataframe.columns, loc='center')
+    table.auto_set_font_size(False)
+    table.set_fontsize(font_size)
+    table.scale(1, 1.5)
+    plt.title(title)
+    return fig
+
+```
+
+
+```
+import matplotlib.pyplot as plt
+
+def render_df_to_pdf_table(df, title="", col_width=3.0, row_height=0.625, font_size=12):
+    n_rows, n_cols = df.shape
+
+    # Create a figure and axis
+    fig, ax = plt.subplots(figsize=(col_width * n_cols, row_height * (n_rows + 1)))
+    ax.axis('off')
+
+    # Format values if needed
+    formatted_data = df.copy()
+    if 'WEEKLY_SALES' in formatted_data.columns:
+        formatted_data['WEEKLY_SALES'] = formatted_data['WEEKLY_SALES'].map('{:,.2f}'.format)
+
+    # Create table
+    table = ax.table(
+        cellText=formatted_data.values,
+        colLabels=formatted_data.columns,
+        cellLoc='center',
+        colLoc='center',
+        loc='center'
+    )
+
+    # Style
+    table.auto_set_font_size(False)
+    table.set_fontsize(font_size)
+    table.scale(1.1, 1.3)
+
+    # Optional title
+    if title:
+        plt.title(title, fontsize=font_size + 2, pad=10)
+
+    # Bold header row
+    for (row, col), cell in table.get_celld().items():
+        if row == 0:
+            cell.set_text_props(weight='bold')
+            cell.set_facecolor("#f1f3f6")  # Light header color
+        elif row % 2 == 0:
+            cell.set_facecolor("#fafafa")  # Light row banding
+        else:
+            cell.set_facecolor("#ffffff")  # Alternating row color
+
+        # Optional: remove table borders for a cleaner look
+        cell.set_edgecolor('#dddddd')
+
+    return fig
+
+```
+
+## Weekly Sales by Store and Holiday
 
 
 
@@ -33,6 +103,9 @@ df = session.table("GOLD.weekly_sales_by_store").to_pandas()
 # plt.title("Weekly Sales by IsHoliday")
 # plt.show()
 
+# Initialize PdfPages
+pdf_path = "weekly_sales_report.pdf"
+pdf = PdfPages(pdf_path)
 
 # -- STREAMLIT DASHBOARD UI --
 st.title("Weekly Sales by Store and Holiday")
@@ -45,6 +118,7 @@ labels = sales_by_isholiday.index.astype(str).tolist()
 ax1.pie(sales_by_isholiday, labels=labels, autopct='%1.1f%%', startangle=90)
 ax1.axis('equal')
 st.pyplot(fig1)
+
 
 # KPI: Total Weekly Sales
 total_sales = df['WEEKLY_SALES'].sum()
@@ -72,6 +146,8 @@ ax2.set_title("Sales by Store Grouped by IsHoliday")
 ax2.legend(["FALSE", "TRUE"])
 st.pyplot(fig2)
 ```
+
+## Weekly Sales by Tempature and Year
 
 
 ```
@@ -111,9 +187,10 @@ pivoted.plot(kind='bar', stacked=False, ax=ax2)
 ax2.set_ylabel("Weekly Sales")
 ax2.set_xlabel("Year")
 ax2.set_title("Sales by Temperature Grouped by Year")
-plt.close() 
 st.pyplot(fig2)
 ```
+
+## Weekly Sales by Store Size
 
 
 ```
@@ -137,6 +214,8 @@ ax.set_ylabel("Weekly Sales")
 ax.set_title("Line Chart: Weekly Sales vs. Store Size")
 st.pyplot(fig)
 ```
+
+## Weekly Sales by Type and Month
 
 
 ```
@@ -182,6 +261,8 @@ ax.legend(title='Type')
 plt.xticks(rotation=45)
 st.pyplot(fig)
 ```
+
+## Markdown Sales by Store and Year
 
 
 ```
@@ -230,7 +311,6 @@ ax.set_title("Markdown1, Markdown2, Markdown3, Markdown4 and Markdown5 by Year")
 ax.set_xticks([r + bar_width * 2 for r in x])
 ax.set_xticklabels(years)
 ax.legend(title="Type")
-plt.close() 
 st.pyplot(fig)
 
 
@@ -248,9 +328,11 @@ styled_pivot = pivot_table.style.format({
     'MARKDOWN4': '{:,.2f}',
     'MARKDOWN5': '{:,.2f}',
 })
-
+fig_table = render_table(pivot_table, title="Markdown Sales by Year and Store")
 st.dataframe(styled_pivot, use_container_width=True)
 ```
+
+## Weekly Sales by Store and Type
 
 
 ```
@@ -293,6 +375,8 @@ st.pyplot(fig)
 
 ```
 
+## Fuel Price by Store and Year
+
 
 ```
 # Start session and load the data
@@ -327,10 +411,14 @@ styled = final_table.style.format("{:,.2f}")
 st.title("Fuel Price by Store and Year")
 st.dataframe(styled, use_container_width=True)
 
+fig_table = render_table(final_table, title="Fuel Price by Store and Year")
+
 
 
 
 ```
+
+## Weekly Sales Breakdown
 
 
 ```
@@ -391,6 +479,8 @@ st.pyplot(fig3)
 
 ```
 
+## Weekly Sales by CPI
+
 
 ```
 # Start session and load the dbt view
@@ -424,6 +514,8 @@ st.pyplot(fig)
 
 ```
 
+## Department Wise Weekly Sales
+
 
 ```
 # Start session and load the view
@@ -445,9 +537,13 @@ st.metric(label="Weekly_Sales", value=f"{total_sales / 1e9:.3f}bn")
 st.subheader("Top 5 Department-Wise Sales")
 st.dataframe(top5.style.format({"WEEKLY_SALES": "{:,.2f}"}), use_container_width=True)
 
+fig_top5 = render_df_to_pdf_table(top5, title="Top 5 Department-Wise Sales")
+
 # Full department table
 st.subheader("All Department Sales")
 st.dataframe(df.sort_values("DEPT_ID").style.format({"WEEKLY_SALES": "{:,.2f}"}), use_container_width=True)
+
+fig_all = render_df_to_pdf_table(df, title="All Department Sales")
 
 # Bar chart
 st.subheader("Weekly_Sales by Department")
@@ -465,5 +561,29 @@ for _, row in top_labels.iterrows():
                 textcoords="offset points", xytext=(0,5), ha='center', fontsize=8)
 
 st.pyplot(fig)
+
+
+# Create a BytesIO buffer to hold the PDF data
+pdf_buffer = BytesIO()
+
+# Initialize PdfPages with the buffer
+with PdfPages(pdf_buffer) as pdf:
+    # Retrieve all figure numbers
+    fig_nums = plt.get_fignums()
+    # Iterate through each figure and save it to the PDF
+    for fig_num in fig_nums:
+        fig = plt.figure(fig_num)
+        pdf.savefig(fig)
+        plt.close(fig)  # Close the figure after saving to free up memory
+
+# Reset buffer position to the beginning
+pdf_buffer.seek(0)
+
+st.download_button(
+    label="📄 Download All Charts as PDF",
+    data=pdf_buffer,
+    file_name="all_charts.pdf",
+    mime="application/pdf"
+)
 
 ```
