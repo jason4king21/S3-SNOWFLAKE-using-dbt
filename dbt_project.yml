@@ -25,12 +25,12 @@ clean-targets:         # directories to be removed by `dbt clean`
   - "dbt_packages"
 
 on-run-start:
-  - "{{ 1_create_file_format() }}"
-  - "{{ 2_create_AWS_stage() }}"
-  - "{{ 3_create_control_table() }}"
-  - "{{ 4_load_control_table() }}"
-  - "{{ 5_create_tracking_table() }}"
-  - "{{ 6_call_load_walmart_data() }}"
+  - "{{ create_file_format() }}"
+  - "{{ create_AWS_stage() }}"
+  - "{{ create_control_table() }}"
+  - "{{ load_control_table() }}"
+  - "{{ create_tracking_table() }}"
+  - "{{ call_load_walmart_data() }}"
 
 
 # Configuring models

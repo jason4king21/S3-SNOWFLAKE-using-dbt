@@ -10,12 +10,12 @@
         'unemployment',
         'cpi',
         'Markdown1',
-        'Markdown1',
-        'Markdown1',
-        'Markdown1',
-        'Markdown1',
+        'Markdown2',
+        'Markdown3',
+        'Markdown4',
+        'Markdown5',
         'isholiday', 
-        'updated_at',
+        'update_date',
         ],
     schema='SILVER'
 ) }}
