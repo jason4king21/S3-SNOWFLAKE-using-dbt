@@ -8,17 +8,19 @@
 
 WITH source AS (
     SELECT
-        store,
-        date,
+        store as store_id,
+        date as store_date,
+        INGESTION_TIMESTAMP,
         MAX(isholiday) AS isholiday
+        
     FROM {{ source('source', 'DEPARTMENT') }}
-    GROUP BY store, date
+    GROUP BY store, date, INGESTION_TIMESTAMP
 )
 
 SELECT
-    {{ dbt_utils.generate_surrogate_key(['source.STORE', 'source.date']) }} AS date_id,
-    source.STORE,
-    source.date as store_date,
+    {{ dbt_utils.generate_surrogate_key(['source.store_id', 'source.store_date']) }} AS date_id,
+    source.store_id,
+    source.store_date,
     source.isholiday,
     CURRENT_TIMESTAMP AS update_date,
     {% if is_incremental() %}
@@ -29,6 +31,6 @@ SELECT
 FROM source
 {% if is_incremental() %}
 LEFT JOIN {{ this }} AS target
-    ON source.STORE = target.STORE and source.date = target.date
+    ON source.store_id = target.store_id and source.store_date = target.store_date
     WHERE source.INGESTION_TIMESTAMP > (SELECT MAX(update_date) FROM {{ this }})
 {% endif %}

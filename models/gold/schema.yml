@@ -1,0 +1,18 @@
+models:
+  - name: weekly_sales_by_store
+    columns:
+      - name: store_id
+        tests:
+          - not_null
+      - name: weekly_sales
+        tests:
+          - not_null
+  - name: weekly_sales_by_tempature_year
+  - name: weekly_sales_by_store_size
+  - name: weekly_sales_by_store_type_month
+  - name: markdown_sales_year_store
+  - name: weekly_sales_by_store_type
+  - name: fuel_price_store_year
+  - name: weekly_sales_breakdown
+  - name: weekly_sales_by_cpi
+  - name: weekly_sales_by_dept
