@@ -12,7 +12,6 @@ with Diagram("SCD1/SCD2 Architecture with Snowflake and DBT", show=False, direct
     with Cluster("Data Ingestion"):
         s3 = S3("AWS S3 Bucket\n(raw data)")
         privatelink = Privatelink("AWS PrivateLink")
-        python = Python("Python")
         s3 >> privatelink
 
     with Cluster("Data Transformation and Warehousing"):
@@ -28,5 +27,5 @@ with Diagram("SCD1/SCD2 Architecture with Snowflake and DBT", show=False, direct
 
         dbt_cloud = Dbt("DBT Cloud")
 
-    python >> s3
+    s3
     dbt_cloud >> snapshot
