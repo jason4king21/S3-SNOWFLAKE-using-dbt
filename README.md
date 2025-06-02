@@ -10,7 +10,7 @@ This project demonstrates an end-to-end modern data pipeline using **dbt** to in
 
 ## 🧩 dbt Linage
 
-![Data Pipeline Diagram](diagrams/dbt_linage.png)
+![Data Pipeline Diagram](diagrams/dbt_lineage.png)
 
 1. **Raw File Drop**  
    - Source `.csv` files are uploaded into an S3 bucket.
