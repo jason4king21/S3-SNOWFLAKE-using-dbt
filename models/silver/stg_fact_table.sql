@@ -30,11 +30,11 @@ WITH source AS (
         fact.temperature as Store_temperature,
         fact.unemployment,
         fact.CPI,
-        fact.Markdown1,
-        fact.Markdown2,
-        fact.Markdown3,
-        fact.Markdown4,
-        fact.Markdown5,
+        CASE WHEN fact.Markdown1 = 'NA' THEN 0 ELSE CAST(fact.Markdown1 AS FLOAT) END AS MARKDOWN1,
+        CASE WHEN fact.Markdown2 = 'NA' THEN 0 ELSE CAST(fact.Markdown2 AS FLOAT) END AS MARKDOWN2,
+        CASE WHEN fact.Markdown3 = 'NA' THEN 0 ELSE CAST(fact.Markdown3 AS FLOAT) END AS MARKDOWN3,
+        CASE WHEN fact.Markdown4 = 'NA' THEN 0 ELSE CAST(fact.Markdown4 AS FLOAT) END AS MARKDOWN4,
+        CASE WHEN fact.Markdown5 = 'NA' THEN 0 ELSE CAST(fact.Markdown5 AS FLOAT) END AS MARKDOWN5,
         fact.isholiday,
         fact.INGESTION_TIMESTAMP
         

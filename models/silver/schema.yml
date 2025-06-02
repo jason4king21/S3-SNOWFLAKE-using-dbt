@@ -7,12 +7,7 @@ sources:
         - name: STORES
         - name: DEPARTMENT
         - name: FACT
-    # - name: xfm
-    #   database: WALMART
-    #   schema: SILVER
-    #   tables:
-    #     - name: WALMART_STORE_DIM
-    #     - name: WALMART_DEPARTMENT_DIM
+
 models:
   - name: walmart_store_dim
   - name: walmart_department_dim
