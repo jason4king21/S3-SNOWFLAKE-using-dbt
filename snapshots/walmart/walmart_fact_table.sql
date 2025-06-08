@@ -4,7 +4,7 @@
     config(
         target_schema='SILVER',
         target_database='WALMART',
-        unique_key='DATE_ID',
+        unique_key="concat(DATE_ID, '-', STORE_ID, '-', DEPT_ID)",
         strategy='check',
         check_cols=[
             'WEEKLY_SALES',
